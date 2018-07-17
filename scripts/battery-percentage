@@ -1,0 +1,14 @@
+#!/bin/bash
+
+battery=`pmset -g batt | grep "%" | awk '{ FS=" " }{ split($3, a, ";") }{ print a[1]; }'`
+val=`echo $battery | awk '{ split($1,a,"%")  }{ print a[1]  }'`
+color=green
+
+if [ $val -lt 65 ]; then
+  color=yellow
+fi
+if [ $val -lt 15 ]; then
+  color=red
+fi
+
+echo -e "#[fg=${color}, bold]$battery#[fg=default, nobold]"

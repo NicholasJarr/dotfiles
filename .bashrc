@@ -1,3 +1,4 @@
+export CLICOLOR=1
 export LANG="en_US.UTF-8"
 
 current_branch () {
@@ -18,4 +19,5 @@ prompt () {
 
 set -o vi
 export EDITOR=nvim
+PATH=$PATH:$HOME/Projects/OpenSource/dotfiles/scripts
 PROMPT_COMMAND=prompt
