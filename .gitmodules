@@ -7,9 +7,6 @@
 [submodule "vim-plugins/ctrlp.vim"]
 	path = vim-plugins/ctrlp.vim
 	url = https://github.com/ctrlpvim/ctrlp.vim.git
-[submodule "vim-plugins/supertab"]
-	path = vim-plugins/supertab
-	url = https://github.com/ervandew/supertab.git
 [submodule "vim-plugins/vim-commentary"]
 	path = vim-plugins/vim-commentary
 	url = https://github.com/tpope/vim-commentary.git
@@ -52,3 +49,12 @@
 [submodule "vim-plugins/vim-snippets"]
 	path = vim-plugins/vim-snippets
 	url = https://github.com/honza/vim-snippets.git
+[submodule "vim-plugins/ale"]
+	path = vim-plugins/ale
+	url = https://github.com/w0rp/ale.git
+[submodule "vim-plugins/deoplete.nvim"]
+	path = vim-plugins/deoplete.nvim
+	url = https://github.com/Shougo/deoplete.nvim.git
+[submodule "vim-plugins/clang_complete"]
+	path = vim-plugins/clang_complete
+	url = https://github.com/Rip-Rip/clang_complete.git

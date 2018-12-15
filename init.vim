@@ -39,26 +39,34 @@ set noswapfile
 set rtp+=/usr/local/opt/fzf
 execute pathogen#infect('plugins/{}')
 set bg=dark
-set termguicolors
-colorscheme gruvbox
+colorscheme solarized
 
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 let g:UltiSnipsExpandTrigger="JJ"
 let g:UltiSnipsJumpForwardTrigger="JL"
 let g:UltiSnipsJumpBackwardTrigger="JH"
-inoremap jj <ESC>
+let g:airline_extensions = ['branch', 'tabline']
+let g:airline_theme = 'nord'
+let g:deoplete#enable_at_startup = 1
+let g:clang_library_path='/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
 
+inoremap jj <ESC>
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 noremap <leader>e :tabe $MYVIMRC<cr>
 noremap <leader>z :source $MYVIMRC<cr>
 noremap <leader>g :Gstatus<CR>
 noremap <leader>n :nohlsearch<CR>
-noremap <leader>sv :source $MYVIMRC<cr>
+noremap <leader>r :ClearAllCtrlPCaches<cr>
 
-noremap <leader>ss :Dispatch! tmux send-keys -t .+ '<C-r>0' Enter<cr>
-noremap <leader>sa :Dispatch! tmux send-keys -t .- '<C-r>0' Enter<cr>
-noremap <leader>mm :Dispatch! tmux select-pane -t .+<cr>
-noremap <leader>mn :Dispatch! tmux select-pane -t .-<cr>
-noremap <leader><leader> :Dispatch! tmux send-keys -t 1 '(load "%:p")' Enter<cr>
+noremap <leader>fg :!npx eslint --fix %<cr>
+noremap <leader>ss yap:Dispatch psql postgres nicho -c "<C-r>0"<cr>
+noremap <leader>mm :Dispatch tmux select-pane -t .+<cr>
+noremap <leader>mn :Dispatch tmux select-pane -t .-<cr>
+noremap <silent> <leader><leader> :Dispatch! tmux send-keys -t .+ "npm test" Enter<cr>
+
+au BufRead,BufNewFile *.cls set syntax=java 
+au BufRead,BufNewFile *.cmp set syntax=xml 
+au BufRead,BufNewFile *.evt set syntax=xml 
 
 " True colors in tmux
 if &term =~# '^screen'
