@@ -7,5 +7,5 @@ plugins=(git osx vi-mode tmux colored-man-pages)
 
 source $ZSH/oh-my-zsh.sh
 
-alias zshconfig="mate ~/.zshrc"
-alias ohmyzsh="mate ~/.oh-my-zsh"
+alias zshconfig="nvim ~/.zshrc"
+alias ohmyzsh="nvim ~/.oh-my-zsh"
