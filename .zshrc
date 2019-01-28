@@ -3,7 +3,7 @@ export ZSH="/Users/nicho/.oh-my-zsh"
 export LANG=en_US.UTF-8
 
 ZSH_THEME="bureau"
-plugins=(git osx vi-mode tmux colored-man-pages)
+plugins=(git osx vi-mode tmux tmuxinator colored-man-pages)
 
 source $ZSH/oh-my-zsh.sh
 
