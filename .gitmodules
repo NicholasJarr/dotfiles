@@ -43,9 +43,6 @@
 [submodule "vim-plugins/vim-airline"]
 	path = vim-plugins/vim-airline
 	url = https://github.com/vim-airline/vim-airline.git
-[submodule "vim-plugins/nerdtree"]
-	path = vim-plugins/nerdtree
-	url = https://github.com/scrooloose/nerdtree.git
 [submodule "vim-plugins/vim-snippets"]
 	path = vim-plugins/vim-snippets
 	url = https://github.com/honza/vim-snippets.git
@@ -58,3 +55,6 @@
 [submodule "vim-plugins/clang_complete"]
 	path = vim-plugins/clang_complete
 	url = https://github.com/Rip-Rip/clang_complete.git
+[submodule "vim-plugins/vim-vinegar"]
+	path = vim-plugins/vim-vinegar
+	url = https://github.com/tpope/vim-vinegar.git
