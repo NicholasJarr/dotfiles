@@ -27,26 +27,49 @@ set relativenumber
 set colorcolumn=80
 set updatetime=100
 set laststatus=2
+set bg=dark
+set termguicolors
 let mapleader=" "
 let localleader="\\"
-syntax on
-filetype plugin indent on
+
+if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/plugged')
+Plug 'morhetz/gruvbox'
+Plug 'jiangmiao/auto-pairs'
+Plug 'ctrlpvim/ctrlp'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'sheerun/vim-polyglot'
+Plug 'tpope/vim-surround'
+Plug 'altercation/vim-colors-solarized'
+Plug 'SirVer/ultisnips'
+Plug 'vim-airline/vim-airline'
+Plug 'honza/vim-snippets'
+Plug 'w0rp/ale'
+Plug 'Shougo/deoplete'
+Plug 'Rip-Rip/clang_complete'
+Plug 'tpope/vim-vinegar'
+call plug#end()
 
 set nobackup
 set nowritebackup
 set noswapfile
 
-set rtp+=/usr/local/opt/fzf
-execute pathogen#infect('plugins/{}')
-set bg=dark
-colorscheme solarized
+colorscheme gruvbox
 
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
 let g:UltiSnipsExpandTrigger="JJ"
 let g:UltiSnipsJumpForwardTrigger="JL"
 let g:UltiSnipsJumpBackwardTrigger="JH"
 let g:airline_extensions = ['branch', 'tabline']
-let g:airline_theme = 'nord'
+let g:airline_theme = 'gruvbox'
 let g:deoplete#enable_at_startup = 1
 let g:clang_library_path='/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
 
@@ -57,6 +80,8 @@ noremap <leader>z :source $MYVIMRC<cr>
 noremap <leader>g :Gstatus<CR>
 noremap <leader>n :nohlsearch<CR>
 noremap <leader>r :ClearAllCtrlPCaches<cr>
+noremap <leader>v :vs .<cr>
+noremap <leader>b :split .<cr>
 
 noremap <leader>fg :!npx eslint --fix %<cr>
 noremap <leader>ss yap:Dispatch psql postgres nicho -c "<C-r>0"<cr>
