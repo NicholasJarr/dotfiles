@@ -59,7 +59,6 @@ Plug 'tpope/vim-vinegar'
 Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ryanoasis/vim-devicons'
 Plug 'airblade/vim-rooter'
-Plug 'lifepillar/vim-mucomplete'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'davidhalter/jedi-vim'
 Plug 'artur-shaik/vim-javacomplete2'
@@ -67,6 +66,17 @@ Plug 'majutsushi/tagbar'
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'scrooloose/nerdtree'
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+Plug 'neoclide/coc-json', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-html', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-css', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-vetur', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-java', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-solargraph', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-rls', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-yaml', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-python', {'do': 'yarn install --frozen-lockfile'}
 call plug#end()
 
 colorscheme gruvbox
@@ -82,8 +92,6 @@ let g:JavaComplete_EnableDefaultMappings = 0
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
 let g:EasyMotion_use_smartsign_us = 1
-let g:mucomplete#completion_delay = 1
-let g:mucomplete#enable_auto_at_startup = 1
 
 " ale
 let g:ale_linters = {
@@ -147,6 +155,19 @@ map N <Plug>(easymotion-prev)
 
 inoremap jj <ESC>
 
+" coc
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+nnoremap <silent> <leader>K :call <SID>show_documentation()<CR>
+
 noremap <C-p><C-p> :Denite -split=floating file_rec<cr>
 noremap <C-p><C-g> :Denite -split=floating grep<cr>
 noremap <C-p><C-o> :Denite -split=floating outline<cr>
@@ -155,6 +176,8 @@ noremap <leader>e :tabe $MYVIMRC<cr>
 noremap <leader>z :source $MYVIMRC<cr>
 noremap <leader>g :Gstatus<CR>
 noremap <leader>n :NERDTreeToggle<CR>
+
+noremap <leader><leader> :Dispatch! tmux send-keys -t .+ "dotnet build" Enter<cr>
 
 au BufRead,BufNewFile *.cls set syntax=java 
 au BufRead,BufNewFile *.cmp set syntax=xml 
