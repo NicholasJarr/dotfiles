@@ -20,4 +20,5 @@ prompt () {
 set -o vi
 export EDITOR=nvim
 PATH=$PATH:$HOME/Projects/OpenSource/dotfiles/scripts
+PATH=$PATH:/Users/nicho/Library/Python/3.7/bin
 PROMPT_COMMAND=prompt

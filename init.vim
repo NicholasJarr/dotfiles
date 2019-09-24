@@ -61,11 +61,18 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'airblade/vim-rooter'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'davidhalter/jedi-vim'
-Plug 'artur-shaik/vim-javacomplete2'
 Plug 'majutsushi/tagbar'
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'scrooloose/nerdtree'
+Plug 'junegunn/limelight.vim'
+Plug 'junegunn/goyo.vim'
+Plug 'adamclerk/vim-razor'
+Plug 'janko/vim-test'
+Plug 'Lokaltog/vim-monotone'
+Plug 'ewilazarus/preto'
+Plug 'xavierd/clang_complete'
+Plug 'wellle/targets.vim'
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 Plug 'neoclide/coc-json', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
@@ -77,6 +84,7 @@ Plug 'neoclide/coc-solargraph', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-rls', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-yaml', {'do': 'yarn install --frozen-lockfile'}
 Plug 'neoclide/coc-python', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-sources', {'rtp': './packages/coc-tag', 'do': 'yarn install --frozen-lockfile'}
 call plug#end()
 
 colorscheme gruvbox
@@ -86,12 +94,19 @@ let g:UltiSnipsJumpForwardTrigger="JL"
 let g:UltiSnipsJumpBackwardTrigger="JH"
 let g:airline_extensions = ['branch', 'tabline']
 let g:airline_theme = 'gruvbox'
-let g:rooter_patterns = ['.git/']
+let g:rooter_patterns = ['package.json', '.git/']
 let g:OmniSharp_highlight_types = 1
-let g:JavaComplete_EnableDefaultMappings = 0
+let g:OmniSharp_server_stdio = 1
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
 let g:EasyMotion_use_smartsign_us = 1
+let g:jedi#auto_initialization = 0
+let g:jedi#auto_vim_configuration = 0
+let g:ale_python_pylint_executable='pipenv'
+let g:rustfmt_autosave = 1
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_guide_size = 1
+let g:indent_guides_start_level = 2
 
 " ale
 let g:ale_linters = {
@@ -100,42 +115,12 @@ let g:ale_linters = {
 \}
 
 " denite
-call denite#custom#alias('source', 'file/rec/git', 'file/rec')
-call denite#custom#alias('source', 'file_rec', 'file/rec')
-call denite#custom#var('file_rec', 'command',
-      \ ['git', 'ls-tree', '--full-tree', '-r', '--name-only', 'HEAD'])
-call denite#custom#var('file/rec/git', 'command',
-      \ ['git', 'ls-tree', '--full-tree', '-r', '--name-only', 'HEAD'])
-call denite#custom#map(
-        \ 'insert',
-        \ '<C-t>',
-        \ '<denite:do_action:tabopen>',
-        \ 'noremap'
-        \)
-call denite#custom#map(
-        \ 'insert',
-        \ '<C-v>',
-        \ '<denite:do_action:vsplit>',
-        \ 'noremap'
-        \)
-call denite#custom#map(
-        \ 'insert',
-        \ '<C-h>',
-        \ '<denite:do_action:split>',
-        \ 'noremap'
-        \)
-call denite#custom#map(
-        \ 'insert',
-        \ '<C-j>',
-        \ '<denite:move_to_next_line>',
-        \ 'noremap'
-        \)
-call denite#custom#map(
-        \ 'insert',
-        \ '<C-k>',
-        \ '<denite:move_to_previous_line>',
-        \ 'noremap'
-        \)
+call denite#custom#option('_', {
+                \ 'start_filter': 1,
+                \ 'split': 'floating',
+                \ })
+call denite#custom#var('file/rec', 'command',
+      \ ['rg', '--files', '--glob', '!.git'])
 call denite#custom#var('grep', 'command', ['rg'])
 call denite#custom#var('grep', 'default_opts',
       \ ['-i', '--vimgrep', '--no-heading'])
@@ -143,6 +128,74 @@ call denite#custom#var('grep', 'recursive_opts', [])
 call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
 call denite#custom#var('grep', 'separator', ['--'])
 call denite#custom#var('grep', 'final_opts', [])
+
+let s:menus = {}
+let s:menus.tests = {
+      \ 'description': 'Tests commands'
+      \ }
+let s:menus.tests.command_candidates = [
+      \ ['Suite', 'TestSuite'],
+      \ ['File', 'TestFile'],
+      \ ['Last', 'TestLast'],
+      \ ['Visit', 'TestVisit'],
+      \ ['Nearest', 'TestNearest'],
+      \ ]
+let s:menus.csharp = {
+      \ 'description': 'C# commands'
+      \ }
+let s:menus.csharp.command_candidates = [
+      \ ['Format', 'OmniSharpCodeFormat'],
+      \ ]
+let s:menus.git = {
+      \ 'description': 'Git commands'
+      \ }
+let s:menus.git.command_candidates = [
+      \ ['Status', 'Gstatus'],
+      \ ]
+let s:menus.commands = {
+      \ 'description': 'My commands for editing'
+      \ }
+let s:menus.commands.command_candidates = [
+      \ ['Files', 'Denite file/rec'],
+      \ ['Files from git', 'Denite file/rec/git'],
+      \ ['Grep', 'Denite grep'],
+      \ ['Outline', 'Denite outline'],
+      \ ]
+call denite#custom#var('menu', 'menus', s:menus)
+
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+  nnoremap <silent><buffer><expr> <CR>
+        \ denite#do_map('do_action')
+  nnoremap <silent><buffer><expr> v
+        \ denite#do_map('do_action', 'vsplit')
+  nnoremap <silent><buffer><expr> V
+        \ denite#do_map('do_action', 'split')
+  nnoremap <silent><buffer><expr> t
+        \ denite#do_map('do_action', 'tabopen')
+  nnoremap <silent><buffer><expr> d
+        \ denite#do_map('do_action', 'delete')
+  nnoremap <silent><buffer><expr> p
+        \ denite#do_map('do_action', 'preview')
+  nnoremap <silent><buffer><expr> q
+        \ denite#do_map('quit')
+  nnoremap <silent><buffer><expr> i
+        \ denite#do_map('open_filter_buffer')
+  nnoremap <silent><buffer><expr> <Space>
+        \ denite#do_map('toggle_select').'j'
+endfunction
+autocmd FileType denite-filter call s:denite_filter_my_settings()
+function! s:denite_filter_my_settings() abort
+  imap <silent><buffer><expr> <Esc> denite#do_map('quit')
+  imap <silent><buffer><expr> <CR> denite#do_map('do_action')
+  imap <silent><buffer><expr> <C-v> denite#do_map('do_action', 'vsplit')
+  imap <silent><buffer><expr> <C-h> denite#do_map('do_action', 'split')
+  imap <silent><buffer><expr> <C-t> denite#do_map('do_action', 'tabopen')
+  imap <silent><buffer><expr> <C-d> denite#do_map('do_action', 'delete')
+  imap <silent><buffer><expr> <C-p> denite#do_map('do_action', 'preview')
+  imap <silent><buffer><expr> <C-space> denite#do_map('denite_filter_quit')
+endfunction
+
 
 " easymotion
 map <leader>s <Plug>(easymotion-overwin-f2)
@@ -152,8 +205,6 @@ map  / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-tn)
 map n <Plug>(easymotion-next)
 map N <Plug>(easymotion-prev)
-
-inoremap jj <ESC>
 
 " coc
 function! s:check_back_space() abort
@@ -167,23 +218,36 @@ inoremap <silent><expr> <TAB>
       \ coc#refresh()
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 nnoremap <silent> <leader>K :call <SID>show_documentation()<CR>
+nnoremap <silent> <leader><leader> :CocFix<CR>
 
-noremap <C-p><C-p> :Denite -split=floating file_rec<cr>
-noremap <C-p><C-g> :Denite -split=floating grep<cr>
-noremap <C-p><C-o> :Denite -split=floating outline<cr>
+" Goyo and Limelight
+noremap <C-g><C-g> :Goyo<cr>
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
+
+" vim-test
+let test#strategy = 'dispatch'
+
+" clang_complete
+let s:clang_library_path='/Library/Developer/CommandLineTools/usr/lib'
+if isdirectory(s:clang_library_path)
+    let g:clang_library_path=s:clang_library_path
+endif
+
+inoremap jj <ESC>
+noremap <C-p> :Denite file/rec<cr>
+noremap <leader>o :Denite outline<cr>
+noremap <leader>v :vs .<cr>
+noremap <leader>i :Denite menu<cr>
 noremap <leader>t :TagbarToggle<cr>
 noremap <leader>e :tabe $MYVIMRC<cr>
 noremap <leader>z :source $MYVIMRC<cr>
 noremap <leader>g :Gstatus<CR>
 noremap <leader>n :NERDTreeToggle<CR>
 
-noremap <leader><leader> :Dispatch! tmux send-keys -t .+ "dotnet build" Enter<cr>
-
 au BufRead,BufNewFile *.cls set syntax=java 
 au BufRead,BufNewFile *.cmp set syntax=xml 
 au BufRead,BufNewFile *.evt set syntax=xml 
-
-autocmd FileType java setlocal omnifunc=javacomplete#Complete
 
 " True colors in tmux
 if &term =~# '^screen'
