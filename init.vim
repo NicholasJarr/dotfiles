@@ -31,32 +31,49 @@ set termguicolors
 set completeopt+=longest,menuone,noselect
 set shortmess+=c    " Shut off completion messages
 
+" plugins
 call plug#begin('~/.vim/plugged')
+" themes
 Plug 'morhetz/gruvbox'
 Plug 'chriskempson/base16-vim/'
+
+" editing
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-fugitive'
-Plug 'airblade/vim-gitgutter'
-Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-surround'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'ryanoasis/vim-devicons'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'majutsushi/tagbar'
 Plug 'easymotion/vim-easymotion'
 Plug 'wellle/targets.vim'
 Plug 'godlygeek/tabular'
-Plug 'itchyny/lightline.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': { -> coc#util#install()}}
+Plug 'vimlab/split-term.vim'
+Plug 'wellle/context.vim'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'ludovicchabant/vim-gutentags'
+
+" git
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+
+" files
+Plug 'sheerun/vim-polyglot'
+
+" navigation
+Plug 'majutsushi/tagbar'
 Plug 'airblade/vim-rooter'
 Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': { -> coc#util#install()}}
+Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
+
+" visual
+Plug 'ryanoasis/vim-devicons'
 Plug 'kristijanhusak/defx-icons'
-Plug 'ludovicchabant/vim-gutentags'
-Plug 'whatyouhide/vim-gotham'
-Plug 'vimlab/split-term.vim'
+
+" airline
+Plug 'vim-airline/vim-airline'
+Plug 'khatiba/vim-airline-themes'
+
+" c#
 Plug 'OmniSharp/omnisharp-vim'
 
 " go
@@ -65,32 +82,36 @@ call plug#end()
 
 colorscheme gruvbox
 
+" airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_theme='transparent'
+
 " lightline
-let g:lightline = {
-      \ 'colorscheme': 'jellybeans',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'mode': 'LightlineMode',
-      \   'filetype': 'MyFiletype',
-      \   'fileformat': 'MyFileformat',
-      \   'gitbranch': 'fugitive#head',
-      \ }
-      \ }
-function! MyFiletype()
-  return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
-endfunction
-function! MyFileformat()
-  return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
-endfunction
-function! LightlineMode()
-  return &filetype ==# 'tagbar' ? 'Tagbar':
-        \ &filetype ==# 'denite' ? 'Denite' :
-        \ &filetype ==# 'defx' ? 'Defx' :
-        \ lightline#mode()
-endfunction
+" let g:lightline = {
+"       \ 'colorscheme': 'jellybeans',
+"       \ 'active': {
+"       \   'left': [ [ 'mode', 'paste' ],
+"       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+"       \ },
+"       \ 'component_function': {
+"       \   'mode': 'LightlineMode',
+"       \   'filetype': 'MyFiletype',
+"       \   'fileformat': 'MyFileformat',
+"       \   'gitbranch': 'fugitive#head',
+"       \ }
+"       \ }
+" function! MyFiletype()
+"   return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+" endfunction
+" function! MyFileformat()
+"   return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
+" endfunction
+" function! LightlineMode()
+"   return &filetype ==# 'tagbar' ? 'Tagbar':
+"         \ &filetype ==# 'denite' ? 'Denite' :
+"         \ &filetype ==# 'defx' ? 'Defx' :
+"         \ lightline#mode()
+" endfunction
 
 " rooter
 let g:rooter_patterns = ['Rakefile', '.git/', '.vscode/', 'package.json']
@@ -257,6 +278,8 @@ let g:OmniSharp_server_stdio = 1
 let g:OmniSharp_highlight_types = 3
 
 " misc
+" font
+execute "Guifont! JetBrains\ Mono:13"
 " Zoom / Restore window.
 function! s:ZoomToggle() abort
   if exists('t:zoomed') && t:zoomed
