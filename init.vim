@@ -30,6 +30,8 @@ set bg=dark
 set termguicolors
 set completeopt+=longest,menuone,noselect
 set shortmess+=c    " Shut off completion messages
+set guifont=JetBrainsMono\ NF
+let mapleader=" "
 
 " plugins
 call plug#begin('~/.vim/plugged')
@@ -68,6 +70,7 @@ Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
 " visual
 Plug 'ryanoasis/vim-devicons'
 Plug 'kristijanhusak/defx-icons'
+Plug 'mhinz/vim-startify'
 
 " airline
 Plug 'vim-airline/vim-airline'
@@ -80,7 +83,9 @@ Plug 'OmniSharp/omnisharp-vim'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for': 'go' }
 call plug#end()
 
+" colors
 colorscheme gruvbox
+let g:gruvbox_contrast_dark="soft"
 
 " airline
 let g:airline#extensions#tabline#enabled = 1
@@ -278,8 +283,6 @@ let g:OmniSharp_server_stdio = 1
 let g:OmniSharp_highlight_types = 3
 
 " misc
-" font
-execute "Guifont! JetBrains\ Mono:13"
 " Zoom / Restore window.
 function! s:ZoomToggle() abort
   if exists('t:zoomed') && t:zoomed
