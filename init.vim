@@ -18,7 +18,9 @@ set ignorecase
 set number
 set nowrap
 set autoread
-set guioptions=
+set guioptions-=L
+set guioptions-=r
+set guifont=Inconsolata:h16
 set belloff=all
 set noshowmode
 set lazyredraw
@@ -30,126 +32,95 @@ set bg=dark
 set termguicolors
 set completeopt+=longest,menuone,noselect
 set shortmess+=c    " Shut off completion messages
-set guifont=JetBrainsMono\ NF
+
 let mapleader=" "
+let localleader="\\"
 
-" plugins
+if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin('~/.vim/plugged')
-" themes
 Plug 'morhetz/gruvbox'
-Plug 'chriskempson/base16-vim/'
-
-" editing
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-surround'
-Plug 'easymotion/vim-easymotion'
-Plug 'wellle/targets.vim'
-Plug 'godlygeek/tabular'
-Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': { -> coc#util#install()}}
-Plug 'vimlab/split-term.vim'
-Plug 'wellle/context.vim'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'ludovicchabant/vim-gutentags'
-
-" git
+Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
-
-" files
 Plug 'sheerun/vim-polyglot'
-
-" navigation
-Plug 'majutsushi/tagbar'
-Plug 'airblade/vim-rooter'
-Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
-
-" visual
-Plug 'ryanoasis/vim-devicons'
-Plug 'kristijanhusak/defx-icons'
-Plug 'mhinz/vim-startify'
-
-" airline
+Plug 'tpope/vim-surround'
+Plug 'SirVer/ultisnips'
 Plug 'vim-airline/vim-airline'
-Plug 'khatiba/vim-airline-themes'
-
-" c#
+Plug 'honza/vim-snippets'
+Plug 'w0rp/ale'
+Plug 'tpope/vim-vinegar'
+Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'ryanoasis/vim-devicons'
+Plug 'airblade/vim-rooter'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'davidhalter/jedi-vim'
+Plug 'majutsushi/tagbar'
 Plug 'OmniSharp/omnisharp-vim'
-
-" go
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for': 'go' }
+Plug 'easymotion/vim-easymotion'
+Plug 'scrooloose/nerdtree'
+Plug 'junegunn/limelight.vim'
+Plug 'junegunn/goyo.vim'
+Plug 'adamclerk/vim-razor'
+Plug 'janko/vim-test'
+Plug 'Lokaltog/vim-monotone'
+Plug 'ewilazarus/preto'
+Plug 'xavierd/clang_complete'
+Plug 'wellle/targets.vim'
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+Plug 'neoclide/coc-json', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-tsserver', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-html', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-css', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-vetur', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-java', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-solargraph', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-rls', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-yaml', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-python', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc-sources', {'rtp': './packages/coc-tag', 'do': 'yarn install --frozen-lockfile'}
 call plug#end()
 
-" colors
 colorscheme gruvbox
-let g:gruvbox_contrast_dark="soft"
 
-" airline
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_theme='transparent'
+let g:UltiSnipsExpandTrigger="JJ"
+let g:UltiSnipsJumpForwardTrigger="JL"
+let g:UltiSnipsJumpBackwardTrigger="JH"
+let g:airline_extensions = ['branch', 'tabline']
+let g:airline_theme = 'gruvbox'
+let g:rooter_patterns = ['package.json', '.git/']
+let g:OmniSharp_highlight_types = 1
+let g:OmniSharp_server_stdio = 1
+let g:EasyMotion_do_mapping = 0
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_use_smartsign_us = 1
+let g:jedi#auto_initialization = 0
+let g:jedi#auto_vim_configuration = 0
+let g:ale_python_pylint_executable='pipenv'
+let g:rustfmt_autosave = 1
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_guide_size = 1
+let g:indent_guides_start_level = 2
 
-" lightline
-" let g:lightline = {
-"       \ 'colorscheme': 'jellybeans',
-"       \ 'active': {
-"       \   'left': [ [ 'mode', 'paste' ],
-"       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-"       \ },
-"       \ 'component_function': {
-"       \   'mode': 'LightlineMode',
-"       \   'filetype': 'MyFiletype',
-"       \   'fileformat': 'MyFileformat',
-"       \   'gitbranch': 'fugitive#head',
-"       \ }
-"       \ }
-" function! MyFiletype()
-"   return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
-" endfunction
-" function! MyFileformat()
-"   return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
-" endfunction
-" function! LightlineMode()
-"   return &filetype ==# 'tagbar' ? 'Tagbar':
-"         \ &filetype ==# 'denite' ? 'Denite' :
-"         \ &filetype ==# 'defx' ? 'Defx' :
-"         \ lightline#mode()
-" endfunction
-
-" rooter
-let g:rooter_patterns = ['Rakefile', '.git/', '.vscode/', 'package.json']
+" ale
+let g:ale_linters = {
+\ 'cs': ['OmniSharp'],
+\ 'javascript': ['eslint']
+\}
 
 " denite
 call denite#custom#option('_', {
                 \ 'start_filter': 1,
                 \ 'split': 'floating',
                 \ })
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-  nnoremap <silent><buffer><expr> <CR>
-        \ denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> d
-        \ denite#do_map('do_action', 'delete')
-  nnoremap <silent><buffer><expr> p
-        \ denite#do_map('do_action', 'preview')
-  nnoremap <silent><buffer><expr> h
-        \ denite#do_map('do_action', 'split')
-  nnoremap <silent><buffer><expr> v
-        \ denite#do_map('do_action', 'vsplit')
-  nnoremap <silent><buffer><expr> t
-        \ denite#do_map('do_action', 'tabopen')
-  nnoremap <silent><buffer><expr> q
-        \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> i
-        \ denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <Space>
-        \ denite#do_map('toggle_select').'j'
-endfunction
-
 call denite#custom#var('file/rec', 'command',
-\ ['rg', '--files', '--glob', '!.git'])
+      \ ['rg', '--files', '--glob', '!.git'])
 call denite#custom#var('grep', 'command', ['rg'])
 call denite#custom#var('grep', 'default_opts',
       \ ['-i', '--vimgrep', '--no-heading'])
@@ -158,100 +129,82 @@ call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
 call denite#custom#var('grep', 'separator', ['--'])
 call denite#custom#var('grep', 'final_opts', [])
 
-map <leader>pp :DeniteProjectDir file/rec<CR>
-map <leader>pc :Denite command<CR>
-map <leader>po :Denite outline<CR>
-map <leader>pg :Denite grep<CR>
-map <leader>pt :Denite tag<CR>
+let s:menus = {}
+let s:menus.tests = {
+      \ 'description': 'Tests commands'
+      \ }
+let s:menus.tests.command_candidates = [
+      \ ['Suite', 'TestSuite'],
+      \ ['File', 'TestFile'],
+      \ ['Last', 'TestLast'],
+      \ ['Visit', 'TestVisit'],
+      \ ['Nearest', 'TestNearest'],
+      \ ]
+let s:menus.csharp = {
+      \ 'description': 'C# commands'
+      \ }
+let s:menus.csharp.command_candidates = [
+      \ ['Format', 'OmniSharpCodeFormat'],
+      \ ]
+let s:menus.git = {
+      \ 'description': 'Git commands'
+      \ }
+let s:menus.git.command_candidates = [
+      \ ['Status', 'Gstatus'],
+      \ ]
+let s:menus.commands = {
+      \ 'description': 'My commands for editing'
+      \ }
+let s:menus.commands.command_candidates = [
+      \ ['Files', 'Denite file/rec'],
+      \ ['Files from git', 'Denite file/rec/git'],
+      \ ['Grep', 'Denite grep'],
+      \ ['Outline', 'Denite outline'],
+      \ ]
+call denite#custom#var('menu', 'menus', s:menus)
 
-" defx
-autocmd FileType defx call s:defx_my_settings()
-function! s:defx_my_settings() abort
-  " Define mappings
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
   nnoremap <silent><buffer><expr> <CR>
-        \ defx#do_action('open')
-  nnoremap <silent><buffer><expr> c
-        \ defx#do_action('copy')
-  nnoremap <silent><buffer><expr> m
-        \ defx#do_action('move')
-  nnoremap <silent><buffer><expr> p
-        \ defx#do_action('paste')
-  nnoremap <silent><buffer><expr> l
-        \ defx#do_action('open')
-  nnoremap <silent><buffer><expr> <C-v>
-        \ defx#do_action('open', 'vsplit')
-  nnoremap <silent><buffer><expr> <C-h>
-        \ defx#do_action('open', 'split')
-  nnoremap <silent><buffer><expr> <C-t>
-        \ defx#do_action('open', 'tabopen')
-  nnoremap <silent><buffer><expr> P
-        \ defx#do_action('open', 'pedit')
-  nnoremap <silent><buffer><expr> o
-        \ defx#do_action('open_or_close_tree')
-  nnoremap <silent><buffer><expr> K
-        \ defx#do_action('new_directory')
-  nnoremap <silent><buffer><expr> N
-        \ defx#do_action('new_file')
-  nnoremap <silent><buffer><expr> M
-        \ defx#do_action('new_multiple_files')
-  nnoremap <silent><buffer><expr> C
-        \ defx#do_action('toggle_columns',
-        \                'mark:indent:icon:filename:type:size:time')
-  nnoremap <silent><buffer><expr> S
-        \ defx#do_action('toggle_sort', 'time')
+        \ denite#do_map('do_action')
+  nnoremap <silent><buffer><expr> v
+        \ denite#do_map('do_action', 'vsplit')
+  nnoremap <silent><buffer><expr> V
+        \ denite#do_map('do_action', 'split')
+  nnoremap <silent><buffer><expr> t
+        \ denite#do_map('do_action', 'tabopen')
   nnoremap <silent><buffer><expr> d
-        \ defx#do_action('remove')
-  nnoremap <silent><buffer><expr> r
-        \ defx#do_action('rename')
-  nnoremap <silent><buffer><expr> !
-        \ defx#do_action('execute_command')
-  nnoremap <silent><buffer><expr> x
-        \ defx#do_action('execute_system')
-  nnoremap <silent><buffer><expr> yy
-        \ defx#do_action('yank_path')
-  nnoremap <silent><buffer><expr> .
-        \ defx#do_action('toggle_ignored_files')
-  nnoremap <silent><buffer><expr> ;
-        \ defx#do_action('repeat')
-  nnoremap <silent><buffer><expr> h
-        \ defx#do_action('cd', ['..'])
-  nnoremap <silent><buffer><expr> -
-        \ defx#do_action('cd', ['..'])
-  nnoremap <silent><buffer><expr> ~
-        \ defx#do_action('cd')
+        \ denite#do_map('do_action', 'delete')
+  nnoremap <silent><buffer><expr> p
+        \ denite#do_map('do_action', 'preview')
   nnoremap <silent><buffer><expr> q
-        \ defx#do_action('quit')
+        \ denite#do_map('quit')
+  nnoremap <silent><buffer><expr> i
+        \ denite#do_map('open_filter_buffer')
   nnoremap <silent><buffer><expr> <Space>
-        \ defx#do_action('toggle_select') . 'j'
-  nnoremap <silent><buffer><expr> *
-        \ defx#do_action('toggle_select_all')
-  nnoremap <silent><buffer><expr> j
-        \ line('.') == line('$') ? 'gg' : 'j'
-  nnoremap <silent><buffer><expr> k
-        \ line('.') == 1 ? 'G' : 'k'
-  nnoremap <silent><buffer><expr> <C-l>
-        \ defx#do_action('redraw')
-  nnoremap <silent><buffer><expr> <C-g>
-        \ defx#do_action('print')
-  nnoremap <silent><buffer><expr> cd
-        \ defx#do_action('change_vim_cwd')
+        \ denite#do_map('toggle_select').'j'
+endfunction
+autocmd FileType denite-filter call s:denite_filter_my_settings()
+function! s:denite_filter_my_settings() abort
+  imap <silent><buffer><expr> <Esc> denite#do_map('quit')
+  imap <silent><buffer><expr> <CR> denite#do_map('do_action')
+  imap <silent><buffer><expr> <C-v> denite#do_map('do_action', 'vsplit')
+  imap <silent><buffer><expr> <C-h> denite#do_map('do_action', 'split')
+  imap <silent><buffer><expr> <C-t> denite#do_map('do_action', 'tabopen')
+  imap <silent><buffer><expr> <C-d> denite#do_map('do_action', 'delete')
+  imap <silent><buffer><expr> <C-p> denite#do_map('do_action', 'preview')
+  imap <silent><buffer><expr> <C-space> denite#do_map('denite_filter_quit')
 endfunction
 
-map - :Defx -columns=icons:indent:filename:type .<CR>
-map <leader>fv :Defx -split=vertical -columns=indent:icons:filename:type .<CR>
-map <leader>fh :Defx -split=horizontal -columns=indent:icons:filename:type .<CR>
-map <leader>ft :Defx -split=tab -columns=indent:icons:filename:type .<CR>
-map <leader>fe :Defx -split=vertical -winwidth=25 -direction=topleft -columns=indent:icons:filename:type .<CR>
 
 " easymotion
-let g:EasyMotion_do_mapping = 0
-let g:EasyMotion_smartcase = 1
-let g:EasyMotion_use_smartsign_us = 1
-
-map <leader>ss <Plug>(easymotion-overwin-f2)
-map <leader>sj <Plug>(easymotion-j)
-map <leader>sk <Plug>(easymotion-k)
-map <leader>sf <Plug>(easymotion-f)
+map <leader>s <Plug>(easymotion-overwin-f2)
+map <leader>j <Plug>(easymotion-j)
+map <leader>k <Plug>(easymotion-k)
+map  / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
+map n <Plug>(easymotion-next)
+map N <Plug>(easymotion-prev)
 
 " coc
 function! s:check_back_space() abort
@@ -267,51 +220,34 @@ inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 nnoremap <silent> <leader>K :call <SID>show_documentation()<CR>
 nnoremap <silent> <leader><leader> :CocFix<CR>
 
-" ultisnips
-let g:UltiSnipsExpandTrigger="JJ"
-let g:UltiSnipsJumpForwardTrigger="JL"
-let g:UltiSnipsJumpBackwardTrigger="JH"
+" Goyo and Limelight
+noremap <C-g><C-g> :Goyo<cr>
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
 
-" fugitive
-nnoremap <leader>gg :Gstatus<CR>
+" vim-test
+let test#strategy = 'dispatch'
 
-" tagbar
-nnoremap <leader>tt :Tagbar<CR>
-
-" omnisharp
-let g:OmniSharp_server_stdio = 1
-let g:OmniSharp_highlight_types = 3
-
-" misc
-" Zoom / Restore window.
-function! s:ZoomToggle() abort
-  if exists('t:zoomed') && t:zoomed
-    execute t:zoom_winrestcmd
-    let t:zoomed = 0
-  else
-    let t:zoom_winrestcmd = winrestcmd()
-    resize
-    vertical resize
-    let t:zoomed = 1
-  endif
-endfunction
-
-command! ZoomToggle call s:ZoomToggle()
+" clang_complete
+let s:clang_library_path='/Library/Developer/CommandLineTools/usr/lib'
+if isdirectory(s:clang_library_path)
+    let g:clang_library_path=s:clang_library_path
+endif
 
 inoremap jj <ESC>
-nnoremap <leader>ee :tabe $MYVIMRC<CR>
-nnoremap <leader>es :source $MYVIMRC<CR>
-nnoremap <leader>' :10Term<CR>
-nnoremap <silent> <leader>wf :ZoomToggle<CR>
+noremap <C-p> :Denite file/rec<cr>
+noremap <leader>o :Denite outline<cr>
+noremap <leader>v :vs .<cr>
+noremap <leader>i :Denite menu<cr>
+noremap <leader>t :TagbarToggle<cr>
+noremap <leader>e :tabe $MYVIMRC<cr>
+noremap <leader>z :source $MYVIMRC<cr>
+noremap <leader>g :Gstatus<CR>
+noremap <leader>n :NERDTreeToggle<CR>
 
 au BufRead,BufNewFile *.cls set syntax=java 
 au BufRead,BufNewFile *.cmp set syntax=xml 
 au BufRead,BufNewFile *.evt set syntax=xml 
-
-" TODO: Check later
-" hi ActiveWindow ctermbg=None ctermfg=None guibg=None
-" hi InactiveWindow ctermbg=darkgray ctermfg=gray guibg=#282c34
-" set winhighlight=Normal:ActiveWindow,NormalNC:InactiveWindow
 
 " True colors in tmux
 if &term =~# '^screen'
