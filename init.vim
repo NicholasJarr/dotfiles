@@ -21,10 +21,10 @@ set updatetime=100
 set laststatus=2
 set bg=dark
 set termguicolors
-set completeopt+=longest,menuone,noselect
+set completeopt=menu,menuone,noselect,noinsert
 set shortmess+=c    " Shut off completion messages
 set belloff+=ctrlg  " If Vim beeps during completion
-set guifont=ProggyCleanTTSZ\ Nerd\ Font\ Mono:h18
+set guifont=Hack\ NF:h14
 let mapleader=" "
 
 " better vim temp file handling
@@ -53,20 +53,22 @@ Plug 'godlygeek/tabular'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'ludovicchabant/vim-gutentags'
 Plug 'Konfekt/FastFold'
 Plug 'easymotion/vim-easymotion'
 
 " completion
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'lifepillar/vim-mucomplete'
+Plug 'dense-analysis/ale'
+Plug 'OmniSharp/omnisharp-vim'
+
+" terminal
+Plug 'rhysd/reply.vim'
 
 " test
 Plug 'janko/vim-test'
 
 " git
 Plug 'tpope/vim-fugitive'
-Plug 'junegunn/gv.vim'
-Plug 'sodapopcan/vim-twiggy'
 Plug 'airblade/vim-gitgutter'
 
 " files
@@ -75,12 +77,10 @@ Plug 'sheerun/vim-polyglot'
 " navigation
 Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'liuchengxu/vista.vim'
-Plug 'lambdalisue/fern.vim'
-Plug 'lambdalisue/fern-mapping-project-top.vim'
-Plug 'lambdalisue/fern-renderer-devicons.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'voldikss/vim-floaterm'
 Plug 'airblade/vim-rooter'
+Plug 'tpope/vim-vinegar'
+Plug 'tpope/vim-unimpaired'
 
 " command
 Plug 'tpope/vim-dispatch'
@@ -90,8 +90,6 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'kristijanhusak/defx-icons'
 Plug 'mhinz/vim-startify'
 Plug 'Yggdroot/indentLine'
-Plug 'junegunn/goyo.vim'
-Plug 'junegunn/limelight.vim'
 
 " lightline
 Plug 'itchyny/lightline.vim'
@@ -105,60 +103,98 @@ call plug#end()
 
 colorscheme gruvbox
 
-" files
-nnoremap - :Fern .<CR>
-nnoremap <leader><leader>d :Fern . -drawer<CR>
-nnoremap <leader><leader>v :vs .<CR>:Fern .<CR>
-nnoremap <leader><leader>h :sp .<CR>:Fern .<CR>
-nnoremap <leader><leader>t :tabe .<CR>:Fern .<CR>
+" mucomplete
+let g:mucomplete#enable_auto_at_startup = 0
+let g:mucomplete#completion_delay = 0
+let g:mucomplete#can_complete = {}
+let g:mucomplete#can_complete.default = { 'omni': { t -> 1 } }
+let g:mucomplete#chains = {
+    \ 'default' : ['path', 'ulti', 'omni', 'keyn', 'dict', 'uspl'],
+    \ 'vim'     : ['path', 'ulti', 'cmd', 'keyn']
+    \ }
 
-augroup Fern
-  autocmd!
+" ale
+let g:ale_set_balloons = 1
+let g:ale_linters = {
+\ 'cs': ['OmniSharp'],
+\ 'rust': ['rls']
+\}
+let g:ale_completion_symbols = {
+\ 'text': '',
+\ 'method': '',
+\ 'function': '',
+\ 'constructor': '',
+\ 'field': '',
+\ 'variable': '',
+\ 'class': '',
+\ 'interface': '',
+\ 'module': '',
+\ 'property': '',
+\ 'unit': 'unit',
+\ 'value': 'val',
+\ 'enum': '',
+\ 'keyword': 'keyword',
+\ 'snippet': '',
+\ 'color': 'color',
+\ 'file': '',
+\ 'reference': 'ref',
+\ 'folder': '',
+\ 'enum member': '',
+\ 'constant': '',
+\ 'struct': '',
+\ 'event': 'event',
+\ 'operator': '',
+\ 'type_parameter': 'type param',
+\ '<default>': 'v'
+\ }
+set omnifunc=ale#completion#OmniFunc
 
-  autocmd FileType fern nnoremap ~ :Fern ~<CR>
-augroup end
+" omnisharp
+au FileType cs setlocal omnifunc=OmniSharp#Complete
 
-" gutentags
-let s:vim_tags = expand('~/.cache/tags')
-let g:gutentags_cache_dir = s:vim_tags
+" reply.vim
 
-" coc
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+let s:repl_cs = reply#repl#base('dotnet', {
+    \   'prompt_start' : '^>',
+    \   'prompt_continue' : '^*',
+    \ })
 
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+function! s:repl_cs.executable() abort
+    return self.get_var('executable', 'dotnet')
 endfunction
 
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
+
+function! s:repl_cs.get_command() abort
+    return [self.executable(), 'script'] + self.get_var('command_options', [])
+endfunction
+
+function! s:define_repl_cs() abort
+    return deepcopy(s:repl_cs)
+endfunction
+
+let g:reply_repls = {
+\   'cs': [function('s:define_repl_cs')]
+\ }
+
+nnoremap <leader>rr :Repl<CR>
+nnoremap <leader>ra :ReplAuto<CR>
+nnoremap <leader>rc :ReplRecv<CR>
+nnoremap <leader>rs :ReplSend<CR>
+nnoremap <leader>rt :ReplStop<CR>
 
 " easymotion
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
 
-nmap s <Plug>(easymotion-overwin-f2)
+nmap ss <Plug>(easymotion-overwin-f2)
 
-" floaterm
-let g:floaterm_keymap_new    = '<leader>fk'
-let g:floaterm_keymap_prev   = '<leader>fh'
-let g:floaterm_keymap_next   = '<leader>fl'
-let g:floaterm_keymap_toggle = '<leader>ff'
-
-"ultisnips
+" ultisnips
 let g:UltiSnipsExpandTrigger="JJ"
 let g:UltiSnipsJumpForwardTrigger="JL"
 let g:UltiSnipsJumpBackwardTrigger="JH"
 
 " fugitive
 nnoremap <leader>gg :Gstatus<CR>
-nnoremap <leader>gb :Twiggy 
-nnoremap <leader>gt :Twiggy<CR>
-nnoremap <leader>gv :GV<CR>
 
 " vista
 au FileType vista IndentLinesDisable
@@ -173,9 +209,7 @@ nnoremap <silent> <leader>tv :TestVisit<CR>
 
 " indent line
 let g:indentLine_setColors = 1
-
-" fern
-let g:fern#renderer = "devicons"
+let g:indentLine_fileTypeExclude = ['fzf']
 
 " term
 tnoremap <Esc> <C-\><C-n>
@@ -207,7 +241,7 @@ let g:lightline = {
       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
       \   'right': [ [ 'lineinfo' ],
       \            [ 'percent' ],
-      \            [ 'gutentags', 'fileformat', 'fileencoding', 'filetype' ] ],
+      \            [ 'fileformat', 'fileencoding', 'filetype' ] ],
       \ },
       \ 'component_function': {
       \   'mode': 'LightlineMode',
@@ -230,12 +264,6 @@ function! LightlineMode()
         \ &filetype ==# 'defx' ? 'Defx' :
         \ lightline#mode()
 endfunction
-
-augroup MyGutentagsStatusLineRefresher
-  autocmd!
-  autocmd User GutentagsUpdating call lightline#update()
-  autocmd User GutentagsUpdated call lightline#update()
-augroup END
 
 " denite
 call denite#custom#option('_', {
@@ -286,42 +314,10 @@ map <c-p>: :Denite command<CR>
 map <c-p><c-o> :Denite outline<CR>
 map <c-p><c-g> :Denite grep<CR>
 map <c-p><c-t> :Denite tag<CR>
-map <c-p><c-l> :Denite floaterm floaterm:new -auto-action=preview<CR>
-map <c-p><c-n> :Denite -path=~/OneDrive\ -\ TeslaTech/Notes file/rec file:new<CR>
+map <c-p><c-n> :Denite -path=~/notes file/rec file:new<CR>
 
 " misc
-function! WriterMode()
-  if exists("g:writer_mode") && g:writer_mode == v:true
-    set bg=dark
-    colorscheme gruvbox
-
-    let g:writer_mode = v:false
-  else
-    set bg=light
-    colorscheme pencil
-
-    let g:writer_mode = v:true
-  endif
-
-  Goyo
-  redraw
-endfunction
-
-function! s:goyo_enter()
-    Limelight
-    IndentLinesDisable
-endfunction
-function! s:goyo_leave()
-    Limelight!
-    IndentLinesEnable
-endfunction
-
-autocmd! User GoyoEnter nested call <SID>goyo_enter()
-autocmd! User GoyoLeaver nested call <SID>goyo_leave()
-
 inoremap jj <ESC>
-nnoremap <leader>ww :call WriterMode()<CR>
-nnoremap <leader>wg :Goyo<CR>
 nnoremap <leader>ee :tabe $MYVIMRC<CR>
 nnoremap <leader>es :source $MYVIMRC<CR>
 
