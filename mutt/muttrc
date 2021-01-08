@@ -1,0 +1,128 @@
+# Folder with emails
+set folder = "~/.mail"
+# Type of mailbox
+set mbox_type = Maildir
+# Directory to poll for new mail
+set spoolfile = +jarretta/Inbox
+# Directory to save sent messages into
+set record = +jarretta/Sent
+# Sets the drafts folder
+set postponed = +jarretta/Drafts
+# File that headers will be cached
+set header_cache = ~/.cache/mutt
+
+# Mailboxes
+mailboxes "jarretta ========"
+mailboxes "+jarretta/Inbox"
+mailboxes "+jarretta/Deleted Items"
+mailboxes "+jarretta/Sent Items"
+mailboxes "+jarretta/Drafts"
+mailboxes "+jarretta/Junk Email"
+mailboxes "+jarretta/Newsletters"
+mailboxes "+jarretta/Newsletters/Facebook"
+mailboxes "+jarretta/Newsletters/Medium"
+mailboxes "+jarretta/Old Inbox"
+mailboxes "+jarretta/Old Inbox/Inbox"
+mailboxes "+jarretta/RSS Feeds"
+mailboxes "+jarretta/RSS Feeds/Azure service updates"
+
+# Sort by threads
+set sort = threads
+# Sort threads by last date recieved - newest first
+set sort_aux = reverse-last-date-received
+# Show date in year/month/day hour:minute format
+set date_format="%y/%m/%d %I:%M%p"
+
+# Mailcap file is used to tell mutt how to open different types of file
+set mailcap_path = "~/.config/mutt/mailcap"
+
+# Tells Mutt to automatically view files with these mime types
+auto_view text/html
+# Order to try and show multipart emails
+alternative_order text/plain text/enriched text/html
+
+# Set the smtp url
+set smtp_url="smtp://nicholas@jarretta.com@smtp.office365.com:587"
+# Use external command to get password
+set smtp_pass=`pass show email-jarretta.com`
+set ssl_starttls = yes
+
+# Use nvim but don't force text width (looks terible if read on a phone)
+set editor = "nvim +':set textwidth=0'"
+
+# Use my msmtp / markdown wrapper script to send emails using the jarretta account
+set sendmail = "send-from-mutt jarretta"
+# Puts email headers in Vim
+set edit_headers=yes
+# Adds a header that is used to determine whether my send script should convert the markdown to html
+my_hdr Markdown: false
+
+##############
+#  Contacts  #
+##############
+
+# When looking for contacts, use this command
+set query_command= "abook --mutt-query '%s'"
+# Add current sender to address book
+macro index,pager  a "<pipe-message>abook --add-email-quiet<return>" "Add this sender to Abook"
+# Auto-complete email addresses by pushing tab
+bind editor <Tab> complete-query
+
+# Search back
+bind index N search-opposite
+
+# Refresh
+macro index G "!mbsync -a^M" "Update through mbsync"
+macro index M "!notmuch new^M" "Reindex notmuch"
+
+######################
+#  NotMuch Settings  #
+######################
+# All the notmuch settings are documented here: https://neomutt.org/feature/notmuch
+
+# Points to the notmuch directory
+# Exclude for now; compile last version from source to make error disappear
+# set nm_default_url = "notmuch://$HOME/.mail"
+# Makes notmuch return threads rather than messages
+set nm_query_type = "threads"
+# Binding for notmuch search
+bind index \\ vfolder-from-query
+
+virtual-mailboxes virtual/today "notmuch://?query=date:today"
+
+bind index,pager V sidebar-toggle-virtual
+
+# sidebar
+set sidebar_format = '%B%?F? [%F]?%* %?N?%N/?%S'
+set sidebar_folder_indent
+set sidebar_short_path
+
+# Sort the mailboxes in the Sidebar using this method:
+#       count    – total number of messages
+#       flagged  – number of flagged messages
+#       new      – number of new messages
+#       path     – mailbox path
+#       unsorted – do not sort the mailboxes
+set sidebar_sort_method = 'unsorted'
+# --------------------------------------------------------------------------
+# FUNCTIONS – shown with an example mapping
+# --------------------------------------------------------------------------
+# Move the highlight to the previous mailbox
+bind index,pager \Cp sidebar-prev
+# Move the highlight to the next mailbox
+bind index,pager \Cn sidebar-next
+# Open the highlighted mailbox
+bind index,pager \Co sidebar-open
+# Move the highlight to the previous page
+# This is useful if you have a LOT of mailboxes.
+bind index,pager <F3> sidebar-page-up
+# Move the highlight to the next page
+# This is useful if you have a LOT of mailboxes.
+bind index,pager <F4> sidebar-page-down
+# Move the highlight to the previous mailbox containing new, or flagged,
+# mail.
+bind index,pager <F5> sidebar-prev-new
+# Move the highlight to the next mailbox containing new, or flagged, mail.
+bind index,pager <F6> sidebar-next-new
+# Toggle the visibility of the Sidebar.
+bind index,pager B sidebar-toggle-visible

@@ -55,14 +55,14 @@ Plug 'honza/vim-snippets'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'Konfekt/FastFold'
 Plug 'easymotion/vim-easymotion'
+Plug 'andymass/vim-matchup'
+Plug 'vim-scripts/DrawIt'
+Plug 'mattn/emmet-vim'
 
 " completion
 Plug 'lifepillar/vim-mucomplete'
 Plug 'dense-analysis/ale'
 Plug 'OmniSharp/omnisharp-vim'
-
-" terminal
-Plug 'rhysd/reply.vim'
 
 " test
 Plug 'janko/vim-test'
@@ -99,6 +99,10 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 
 " hex
 Plug 'fidian/hexmode'
+
+" tmux
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'benmills/vimux'
 call plug#end()
 
 colorscheme gruvbox
@@ -152,36 +156,6 @@ set omnifunc=ale#completion#OmniFunc
 " omnisharp
 au FileType cs setlocal omnifunc=OmniSharp#Complete
 
-" reply.vim
-
-let s:repl_cs = reply#repl#base('dotnet', {
-    \   'prompt_start' : '^>',
-    \   'prompt_continue' : '^*',
-    \ })
-
-function! s:repl_cs.executable() abort
-    return self.get_var('executable', 'dotnet')
-endfunction
-
-
-function! s:repl_cs.get_command() abort
-    return [self.executable(), 'script'] + self.get_var('command_options', [])
-endfunction
-
-function! s:define_repl_cs() abort
-    return deepcopy(s:repl_cs)
-endfunction
-
-let g:reply_repls = {
-\   'cs': [function('s:define_repl_cs')]
-\ }
-
-nnoremap <leader>rr :Repl<CR>
-nnoremap <leader>ra :ReplAuto<CR>
-nnoremap <leader>rc :ReplRecv<CR>
-nnoremap <leader>rs :ReplSend<CR>
-nnoremap <leader>rt :ReplStop<CR>
-
 " easymotion
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
@@ -201,6 +175,12 @@ au FileType vista IndentLinesDisable
 nnoremap <leader>tt :Vista<CR>
 
 " test
+
+" use vimux for testing if vim is inside tmux
+if exists('$TMUX')
+    let test#strategy = 'vimux'
+endif
+
 nnoremap <silent> <leader>tn :TestNearest<CR>
 nnoremap <silent> <leader>tf :TestFile<CR>
 nnoremap <silent> <leader>ts :TestSuite<CR>
@@ -227,6 +207,13 @@ au FileType startify IndentLinesDisable
 
 " markdown
 let g:vim_markdown_conceal=0
+
+" auto-pairs
+au FileType cs let b:AutoPairs = AutoPairsDefine({ '#region': '#endregion' })
+
+" matchup
+let g:matchup_matchparen_offscreen = {}
+au FileType cs let b:match_words = '\s*#\s*region.*$:\s*#\s*endregion'
 
 nnoremap <leader>mm :MarkdownPreview<CR>
 nnoremap <leader>mn :MarkdownPreviewStop<CR>
@@ -316,10 +303,32 @@ map <c-p><c-g> :Denite grep<CR>
 map <c-p><c-t> :Denite tag<CR>
 map <c-p><c-n> :Denite -path=~/notes file/rec file:new<CR>
 
+" vimux
+nnoremap <leader>vv :VimuxRunLastCommand<CR>
+nnoremap <leader>vp :VimuxPromptCommand<CR>
+nnoremap <leader>vi :VimuxInspectRunner<CR>
+nnoremap <leader>vz :VimuxZoomRunner<CR>
+
 " misc
 inoremap jj <ESC>
+nnoremap <silent> vv <c-w>v
+nnoremap <silent> vh <c-w>s
 nnoremap <leader>ee :tabe $MYVIMRC<CR>
 nnoremap <leader>es :source $MYVIMRC<CR>
+
+" emmet
+let g:user_emmet_leader_key = '\'
+
+" encrypt
+set backupskip+=*.enc.*
+augroup GPG
+  autocmd!
+  autocmd BufReadPost  *.enc.* :%!gpg -q -d
+  autocmd BufReadPost  *.enc.* |redraw!
+  autocmd BufWritePre  *.enc.* :%!gpg -q -e -a
+  autocmd BufWritePost *.enc.* u
+  autocmd VimLeave     *.enc.* :!clear
+augroup END
 
 " True colors in tmux
 if &term =~# '^screen'
