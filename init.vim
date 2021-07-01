@@ -2,6 +2,7 @@
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
 
+set hidden
 set noautochdir
 set nohlsearch
 set smartindent
@@ -24,7 +25,8 @@ set termguicolors
 set completeopt=menu,menuone,noselect,noinsert
 set shortmess+=c    " Shut off completion messages
 set belloff+=ctrlg  " If Vim beeps during completion
-set guifont=Hack\ NF:h14
+set guifont=Iosevka\ Fixed:h11
+set colorcolumn=80
 let mapleader=" "
 
 " better vim temp file handling
@@ -41,31 +43,24 @@ set viminfo='100,n$HOME/.vim/files/info/viminfo
 call plug#begin('~/.vim/plugged')
 " themes
 Plug 'morhetz/gruvbox'
-Plug 'reedes/vim-colors-pencil'
-Plug 'chriskempson/base16-vim/'
 
 " editing
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-commentary'
 Plug 'machakann/vim-sandwich'
-Plug 'wellle/targets.vim'
 Plug 'godlygeek/tabular'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'Konfekt/FastFold'
-Plug 'easymotion/vim-easymotion'
-Plug 'andymass/vim-matchup'
-Plug 'vim-scripts/DrawIt'
 Plug 'mattn/emmet-vim'
 
-" completion
-Plug 'lifepillar/vim-mucomplete'
-Plug 'dense-analysis/ale'
-Plug 'OmniSharp/omnisharp-vim'
+" navigation
+Plug 'tpope/vim-vinegar'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
-" test
-Plug 'janko/vim-test'
+" completion
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " git
 Plug 'tpope/vim-fugitive'
@@ -74,149 +69,81 @@ Plug 'airblade/vim-gitgutter'
 " files
 Plug 'sheerun/vim-polyglot'
 
-" navigation
-Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'liuchengxu/vista.vim'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'airblade/vim-rooter'
-Plug 'tpope/vim-vinegar'
-Plug 'tpope/vim-unimpaired'
+" visual
+Plug 'ryanoasis/vim-devicons'
+Plug 'mhinz/vim-startify'
+Plug 'Yggdroot/indentLine'
+Plug 'itchyny/lightline.vim'
 
 " command
 Plug 'tpope/vim-dispatch'
 
-" visual
-Plug 'ryanoasis/vim-devicons'
-Plug 'kristijanhusak/defx-icons'
-Plug 'mhinz/vim-startify'
-Plug 'Yggdroot/indentLine'
-
-" lightline
-Plug 'itchyny/lightline.vim'
-
-" markdown
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
-
-" hex
-Plug 'fidian/hexmode'
+" test
+Plug 'vim-test/vim-test'
 
 " tmux
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'benmills/vimux'
 call plug#end()
 
+" gruvbox
+let g:gruvbox_italic=1
 colorscheme gruvbox
 
-" mucomplete
-let g:mucomplete#enable_auto_at_startup = 0
-let g:mucomplete#completion_delay = 0
-let g:mucomplete#can_complete = {}
-let g:mucomplete#can_complete.default = { 'omni': { t -> 1 } }
-let g:mucomplete#chains = {
-    \ 'default' : ['path', 'ulti', 'omni', 'keyn', 'dict', 'uspl'],
-    \ 'vim'     : ['path', 'ulti', 'cmd', 'keyn']
-    \ }
+" coc
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" ale
-let g:ale_set_balloons = 1
-let g:ale_linters = {
-\ 'cs': ['OmniSharp'],
-\ 'rust': ['rls']
-\}
-let g:ale_completion_symbols = {
-\ 'text': '',
-\ 'method': '',
-\ 'function': '',
-\ 'constructor': '',
-\ 'field': '',
-\ 'variable': '',
-\ 'class': '',
-\ 'interface': '',
-\ 'module': '',
-\ 'property': '',
-\ 'unit': 'unit',
-\ 'value': 'val',
-\ 'enum': '',
-\ 'keyword': 'keyword',
-\ 'snippet': '',
-\ 'color': 'color',
-\ 'file': '',
-\ 'reference': 'ref',
-\ 'folder': '',
-\ 'enum member': '',
-\ 'constant': '',
-\ 'struct': '',
-\ 'event': 'event',
-\ 'operator': '',
-\ 'type_parameter': 'type param',
-\ '<default>': 'v'
-\ }
-set omnifunc=ale#completion#OmniFunc
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
-" omnisharp
-au FileType cs setlocal omnifunc=OmniSharp#Complete
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
 
-" easymotion
-let g:EasyMotion_do_mapping = 0
-let g:EasyMotion_smartcase = 1
+" Use `[c` and `]c` to navigate diagnostics
+nmap <silent> [c <Plug>(coc-diagnostic-prev)
+nmap <silent> ]c <Plug>(coc-diagnostic-next)
 
-nmap ss <Plug>(easymotion-overwin-f2)
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+nmap <leader>ca  <Plug>(coc-codeaction)
 
 " ultisnips
 let g:UltiSnipsExpandTrigger="JJ"
-let g:UltiSnipsJumpForwardTrigger="JL"
-let g:UltiSnipsJumpBackwardTrigger="JH"
+let g:UltiSnipsJumpForwardTrigger="JK"
+let g:UltiSnipsJumpBackwardTrigger="JL"
 
-" fugitive
-nnoremap <leader>gg :Gstatus<CR>
+" fzf
+noremap <c-p><c-p> :Files<CR>
+noremap <c-p><c-g> :Rg<CR>
 
-" vista
-au FileType vista IndentLinesDisable
-nnoremap <leader>tt :Vista<CR>
+" emmet
+let g:user_emmet_leader_key = '\'
+let g:user_emmet_expandabbr_key = '\\'
 
-" test
+let g:user_emmet_install_global = 0
+autocmd FileType html,php,scss,sass,css,eruby,javascript,javascriptreact,typescript,typescriptreact EmmetInstall
 
-" use vimux for testing if vim is inside tmux
-if exists('$TMUX')
-    let test#strategy = 'vimux'
-endif
-
-nnoremap <silent> <leader>tn :TestNearest<CR>
-nnoremap <silent> <leader>tf :TestFile<CR>
-nnoremap <silent> <leader>ts :TestSuite<CR>
-nnoremap <silent> <leader>tl :TestLast<CR>
-nnoremap <silent> <leader>tv :TestVisit<CR>
-
-" indent line
-let g:indentLine_setColors = 1
-let g:indentLine_fileTypeExclude = ['fzf']
-
-" term
-tnoremap <Esc> <C-\><C-n>
-tnoremap <M-[> <Esc>
-tnoremap <C-v><Esc> <Esc>
-
-" fast fold
-nmap zuz <Plug>(FastFoldUpdate)
-let g:fastfold_savehook = 1
-let g:fastfold_fold_command_suffixes =  ['x','X','a','A','o','O','c','C']
-let g:fastfold_fold_movement_commands = [']z', '[z', 'zj', 'zk']
-
-" startify
-au FileType startify IndentLinesDisable
-
-" markdown
-let g:vim_markdown_conceal=0
-
-" auto-pairs
-au FileType cs let b:AutoPairs = AutoPairsDefine({ '#region': '#endregion' })
-
-" matchup
-let g:matchup_matchparen_offscreen = {}
-au FileType cs let b:match_words = '\s*#\s*region.*$:\s*#\s*endregion'
-
-nnoremap <leader>mm :MarkdownPreview<CR>
-nnoremap <leader>mn :MarkdownPreviewStop<CR>
 
 " lightline
 let g:lightline = {
@@ -235,7 +162,6 @@ let g:lightline = {
       \   'filetype': 'MyFiletype',
       \   'fileformat': 'MyFileformat',
       \   'gitbranch': 'fugitive#head',
-      \   'gutentags': 'gutentags#statusline',
       \ }
       \ }
 
@@ -245,63 +171,20 @@ endfunction
 function! MyFileformat()
   return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
 endfunction
+
 function! LightlineMode()
-  return &filetype ==# 'vista' ? 'Vista':
-        \ &filetype ==# 'denite' ? 'Denite' :
-        \ &filetype ==# 'defx' ? 'Defx' :
+  return expand('%:t') ==# 'ControlP' ? 'CtrlP' :
         \ lightline#mode()
 endfunction
 
-" denite
-call denite#custom#option('_', {
-      \ 'start_filter': 1,
-      \ 'split': 'floating',
-      \ 'vertical_preview': v:true,
-      \ 'floating_preview': v:true,
-      \ })
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-  nnoremap <silent><buffer><expr> <CR>
-        \ denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> d
-        \ denite#do_map('do_action', 'delete')
-  nnoremap <silent><buffer><expr> p
-        \ denite#do_map('do_action', 'preview')
-  nnoremap <silent><buffer><expr> h
-        \ denite#do_map('do_action', 'split')
-  nnoremap <silent><buffer><expr> v
-        \ denite#do_map('do_action', 'vsplit')
-  nnoremap <silent><buffer><expr> t
-        \ denite#do_map('do_action', 'tabopen')
-  nnoremap <silent><buffer><expr> q
-        \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> i
-        \ denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <Space>
-        \ denite#do_map('toggle_select').'j'
-endfunction
-autocmd FileType denite-filter call s:denite_filter_my_settings()
-function! s:denite_filter_my_settings() abort
-  inoremap <silent><buffer><expr> <C-c> 
-        \ denite#do_map('quit')
-endfunction
+" fugitive
+nnoremap <leader>gg :Gstatus<CR>
 
-call denite#custom#var('file/rec', 'command',
-      \ ['rg', '--files', '--glob', '!.git'])
-call denite#custom#var('grep', 'command', ['rg'])
-call denite#custom#var('grep', 'default_opts',
-      \ ['-i', '--vimgrep', '--no-heading'])
-call denite#custom#var('grep', 'recursive_opts', [])
-call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
-call denite#custom#var('grep', 'separator', ['--'])
-call denite#custom#var('grep', 'final_opts', [])
+" indent line
+let g:indentLine_setColors = 1
 
-map <c-p><c-p> :DeniteProjectDir file/rec file:new<CR>
-map <c-p>: :Denite command<CR>
-map <c-p><c-o> :Denite outline<CR>
-map <c-p><c-g> :Denite grep<CR>
-map <c-p><c-t> :Denite tag<CR>
-map <c-p><c-n> :Denite -path=~/notes file/rec file:new<CR>
+" startify
+au FileType startify IndentLinesDisable
 
 " vimux
 nnoremap <leader>vv :VimuxRunLastCommand<CR>
@@ -309,29 +192,21 @@ nnoremap <leader>vp :VimuxPromptCommand<CR>
 nnoremap <leader>vi :VimuxInspectRunner<CR>
 nnoremap <leader>vz :VimuxZoomRunner<CR>
 
+" rust
+let g:rustfmt_autosave = 1
+
+" test
+let test#strategy = 'dispatch'
+noremap <leader>tt :TestNearest<CR>
+noremap <leader>tf :TestFile<CR>
+noremap <leader>ts :TestSuite<CR>
+noremap <leader>tl :TestLast<CR>
+noremap <leader>tv :TestVisit<CR>
+
 " misc
 inoremap jj <ESC>
+nnoremap ss /
 nnoremap <silent> vv <c-w>v
 nnoremap <silent> vh <c-w>s
 nnoremap <leader>ee :tabe $MYVIMRC<CR>
 nnoremap <leader>es :source $MYVIMRC<CR>
-
-" emmet
-let g:user_emmet_leader_key = '\'
-
-" encrypt
-set backupskip+=*.enc.*
-augroup GPG
-  autocmd!
-  autocmd BufReadPost  *.enc.* :%!gpg -q -d
-  autocmd BufReadPost  *.enc.* |redraw!
-  autocmd BufWritePre  *.enc.* :%!gpg -q -e -a
-  autocmd BufWritePost *.enc.* u
-  autocmd VimLeave     *.enc.* :!clear
-augroup END
-
-" True colors in tmux
-if &term =~# '^screen'
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
