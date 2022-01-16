@@ -1,12 +1,27 @@
-export PATH=$PATH:H/bin:/usr/local/bin:/Users/nicho/bin:/Users/nicho/.gem/ruby/2.3.0/bin:/Users/nicho/Library/Python/2.7/bin:$HOME/.cargo/bin
-export ZSH="/Users/nicho/.oh-my-zsh"
-export LANG=en_US.UTF-8
-export EDITOR=nvim
+#
+# Executes commands at the start of an interactive session.
+#
+# Authors:
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
 
-ZSH_THEME="agnoster"
-plugins=(git osx vi-mode tmux tmuxinator colored-man-pages)
+# Source Prezto.
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+fi
 
-source $ZSH/oh-my-zsh.sh
+# Customize to your needs...
 
-alias zshconfig="nvim ~/.zshrc"
-alias ohmyzsh="nvim ~/.oh-my-zsh"
+# direnv
+eval "$(direnv hook zsh)"
+
+# rbenv
+eval "$(rbenv init -)"
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# app images
+export PATH=$PATH:$HOME/apps

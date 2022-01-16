@@ -68,7 +68,8 @@ require('packer').startup(function()
   -- themes
   use 'morhetz/gruvbox'
   use 'joshdick/onedark.vim'
-  use 'mcchrish/zenbones.nvim'
+  use { 'mcchrish/zenbones.nvim', tag = 'v0.19' }
+  use 'chriskempson/base16-vim'
 
   -- editing
   use 'jiangmiao/auto-pairs'
@@ -76,11 +77,20 @@ require('packer').startup(function()
   use 'machakann/vim-sandwich'
   use 'godlygeek/tabular'
   use 'editorconfig/editorconfig-vim'
+  use 'tpope/vim-unimpaired'
+
+  -- execution
+  use { 'radenling/vim-dispatch-neovim', requires = { 'tpope/vim-dispatch' } }
+
+  -- testing
+  use 'thoughtbot/vim-rspec'
+  use 'rlue/vim-fold-rspec'
 
   -- navigation
   use 'tpope/vim-vinegar'
   use { 'nvim-telescope/telescope.nvim', requires = { { 'nvim-lua/popup.nvim' }, { 'nvim-lua/plenary.nvim' } } }
   use "ahmedkhalf/project.nvim"
+  use "christoomey/vim-tmux-navigator"
 
   -- git
   use 'tpope/vim-fugitive'
@@ -100,7 +110,6 @@ require('packer').startup(function()
   use 'ludovicchabant/vim-gutentags' -- Automatic tags management
 
   -- completion
-
   use 'neovim/nvim-lspconfig'
   use 'glepnir/lspsaga.nvim'
   use { 'ms-jpq/coq_nvim', branch = 'coq'} -- main one
@@ -108,7 +117,11 @@ require('packer').startup(function()
 end)
 
 -- gruvbox
-vim.g.gruvbox_italic = 1
+-- vim.g.gruvbox_italic = 1
+-- vim.cmd [[colorscheme gruvbox]]
+
+-- zenbones
+vim.g.zenbones_compat = 1
 vim.cmd [[colorscheme zenbones]]
 
 -- onedark
@@ -175,6 +188,14 @@ require('gitsigns').setup {
 
 -- fugitive
 vim.api.nvim_set_keymap('n', '<leader>gg', ':Git<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>gb', ':Git blame<cr>', { noremap = true })
+
+-- rspec.nvim
+vim.g.rspec_command = 'Dispatch rspec {spec}'
+vim.api.nvim_set_keymap('n', '<leader>tt', ':call RunLastSpec()<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>tf', ':call RunCurrentSpecFile()<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>tn', ':call RunNearestSpec()<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>ta', ':call RunAllSpecs()<cr>', { noremap = true })
 
 -- telescope
 local actions = require('telescope.actions')
@@ -200,6 +221,7 @@ require('telescope').load_extension('projects')
 vim.api.nvim_set_keymap('n', '<c-p>', ':Telescope find_files<cr>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>pp', ':Telescope projects<cr>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>pg', ':Telescope live_grep<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>pb', ':Telescope buffers<cr>', { noremap = true })
 
 -- project_nvim
 require("project_nvim").setup{}
@@ -239,11 +261,11 @@ end
 
 local coq = require 'coq'
 
-local servers = { 'tsserver', 'pyright', 'clangd', 'omnisharp' }
+local servers = { 'tsserver', 'pyright', 'clangd', 'omnisharp', 'solargraph' }
 for _, lsp in ipairs(servers) do
   if lsp == 'omnisharp' then
     local pid = vim.fn.getpid()
-    local omnisharp_bin = "C:/Users/NicholasJarretta/scoop/apps/omnisharp/current/OmniSharp.exe"
+    local omnisharp_bin = vim.env.OMNISHARP_PATH
 
     nvim_lsp.omnisharp.setup(coq.lsp_ensure_capabilities({
       on_attach = on_attach,
@@ -282,6 +304,21 @@ vim.api.nvim_set_keymap('n', 'vv', '<c-w>v', { noremap = true })
 vim.api.nvim_set_keymap('n', 'vh', '<c-w>s', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>ee', ':tabe $MYVIMRC<cr>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>es', ':source $MYVIMRC<cr>', { noremap = true })
-vim.api.nvim_set_keymap('t', '<esc>', '<c-\\><c-n>', { noremap = true })
 vim.api.nvim_set_keymap('n', '[q', ':cp<cr>', { noremap = true })
 vim.api.nvim_set_keymap('n', ']q', ':cn<cr>', { noremap = true })
+
+-- Terminal
+vim.api.nvim_set_keymap('t', '<esc>', '<c-\\><c-n>', { noremap = true })
+
+function create_augroup(autocmds, name)
+  vim.cmd('augroup ' .. name)
+  vim.cmd('autocmd!')
+  for _, autocmd in ipairs(autocmds) do
+    vim.cmd('autocmd ' .. table.concat(autocmd, ' '))
+  end
+  vim.cmd('augroup END')
+end
+
+create_augroup({
+  { 'TermOpen', '*', 'nnoremap <buffer> . i<Up><cr><c-\\><c-n>G' }
+}, 'terminal_commands')
