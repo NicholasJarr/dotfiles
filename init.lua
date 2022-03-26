@@ -45,7 +45,7 @@ vim.api.nvim_command("set viminfo='100,n$HOME/.vim/files/info/viminfo")
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
+  packer_bootstrap = vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
 end
 
 vim.api.nvim_exec(
@@ -114,6 +114,10 @@ require('packer').startup(function()
   use 'glepnir/lspsaga.nvim'
   use { 'ms-jpq/coq_nvim', branch = 'coq'} -- main one
   use { 'ms-jpq/coq.artifacts', branch= 'artifacts'} -- 9000+ Snippets
+  
+  if packer_bootstrap then
+    require('packer').sync()
+  end
 end)
 
 -- gruvbox
