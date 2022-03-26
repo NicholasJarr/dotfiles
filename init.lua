@@ -117,12 +117,12 @@ require('packer').startup(function()
 end)
 
 -- gruvbox
--- vim.g.gruvbox_italic = 1
--- vim.cmd [[colorscheme gruvbox]]
+vim.g.gruvbox_italic = 1
+vim.cmd [[colorscheme gruvbox]]
 
 -- zenbones
-vim.g.zenbones_compat = 1
-vim.cmd [[colorscheme zenbones]]
+-- vim.g.zenbones_compat = 1
+-- vim.cmd [[colorscheme zenbones]]
 
 -- onedark
 -- vim.g.onedark_terminal_italics = 2
@@ -191,11 +191,12 @@ vim.api.nvim_set_keymap('n', '<leader>gg', ':Git<cr>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>gb', ':Git blame<cr>', { noremap = true })
 
 -- rspec.nvim
-vim.g.rspec_command = 'Dispatch rspec {spec}'
-vim.api.nvim_set_keymap('n', '<leader>tt', ':call RunLastSpec()<cr>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>tf', ':call RunCurrentSpecFile()<cr>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>tn', ':call RunNearestSpec()<cr>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>ta', ':call RunAllSpecs()<cr>', { noremap = true })
+vim.g["test#strategy"] = 'dispatch'
+vim.api.nvim_set_keymap('n', '<leader>tt', ':TestLast<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>tf', ':TestFile<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>tn', ':TestNearest<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>ta', ':TestSuite<cr>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>tq', ':cclose<cr>', { noremap = true })
 
 -- telescope
 local actions = require('telescope.actions')
