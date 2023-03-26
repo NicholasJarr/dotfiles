@@ -1,0 +1,37 @@
+vim.o.hidden = true
+vim.o.autochdir = false
+vim.o.hlsearch = false
+vim.o.cindent = true
+vim.o.shiftwidth=2
+vim.o.ignorecase = true
+vim.o.wrap = false
+vim.o.belloff = 'all'
+vim.o.showmode = false
+vim.o.lazyredraw = true
+vim.o.updatetime = 100
+vim.o.laststatus = 2
+vim.o.bg = 'light'
+vim.o.termguicolors = true
+vim.o.shortmess = 'filnxtToOFc'    -- Shut off completion messages
+vim.o.mouse = 'a'
+vim.wo.number = true
+vim.wo.relativenumber = true
+vim.bo.softtabstop = 2
+vim.bo.smartindent = true
+vim.bo.expandtab = true
+vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+vim.o.showtabline = 2
+vim.o.guifont = 'Iosevka:h12'
+
+-- better vim temp file handling
+vim.o.backup = true
+vim.o.backupdir = vim.env.HOME .. '/.vim/files/backup/'
+vim.o.backupext = '-vimbackup'
+vim.o.backupskip = ''
+vim.o.directory = vim.env.HOME .. '/.vim/files/swap/'
+vim.o.updatecount = 100
+vim.o.undofile = true
+vim.o.undodir = vim.env.HOME .. '/.vim/files/undo/'
+vim.api.nvim_command("set viminfo='100,n$HOME/.vim/files/info/viminfo")
