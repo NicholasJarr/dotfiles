@@ -42,9 +42,6 @@ require('packer').startup(function()
   }
   use 'mattn/emmet-vim'
 
-  -- testing
-  use 'vim-test/vim-test'
-
   -- navigation
   use 'tpope/vim-vinegar'
   use { 'nvim-telescope/telescope.nvim', requires = { { 'nvim-lua/popup.nvim' }, { 'nvim-lua/plenary.nvim' } } }
@@ -58,6 +55,7 @@ require('packer').startup(function()
   -- git
   use 'tpope/vim-fugitive'
   use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
+  use "sindrets/diffview.nvim"
 
   -- visual
   use 'mhinz/vim-startify'
@@ -79,9 +77,6 @@ require('packer').startup(function()
   use {
     "folke/trouble.nvim",
     requires = "kyazdani42/nvim-web-devicons",
-    config = function()
-      require("trouble").setup()
-    end
   }
   use { 'dcampos/nvim-snippy', requires = 'honza/vim-snippets' }
   use {
@@ -96,7 +91,6 @@ require('packer').startup(function()
       { 'hrsh7th/cmp-nvim-lsp-signature-help' },
     }
   }
-  use 'folke/lsp-colors.nvim'
 
   -- term
   use { "akinsho/toggleterm.nvim", tag = '*' }

@@ -150,10 +150,6 @@ nvim_lsp['omnisharp'].setup {
   on_attach = on_attach,
   capabilities = capabilities
 }
-nvim_lsp['solargraph'].setup {
-  on_attach = on_attach,
-  capabilities = capabilities
-}
 nvim_lsp['rust_analyzer'].setup {
   on_attach = on_attach,
   capabilities = capabilities
@@ -162,10 +158,23 @@ nvim_lsp['rust_analyzer'].setup {
 -- null-ls.nvim
 local null_ls = require("null-ls")
 null_ls.setup({
-    sources = {
-      null_ls.builtins.diagnostics.rubocop,
-      null_ls.builtins.formatting.rubocop,
-      null_ls.builtins.diagnostics.eslint_d,
-      null_ls.builtins.formatting.eslint_d,
-    },
+  sources = {
+    null_ls.builtins.diagnostics.rubocop,
+    null_ls.builtins.formatting.rubocop,
+    null_ls.builtins.diagnostics.eslint_d,
+    null_ls.builtins.formatting.eslint_d,
+  },
 })
+
+-- diagnostics icons
+ local signs = {
+  Error = " ",
+  Warn = " ",
+  Hint = " ",
+  Info = " "
+}
+
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, {text = icon, texthl = hl, numhl = hl})
+end
