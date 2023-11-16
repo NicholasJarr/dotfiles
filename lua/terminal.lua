@@ -1,9 +1,6 @@
 require("toggleterm").setup {
   open_mapping = [[\<leader>]],
-  direction = 'vertical',
-  size = function(term)
-    return vim.o.columns * 0.3
-  end
+  direction = 'float'
 }
 
 vim.api.nvim_set_keymap('t', '<esc>', '<c-\\><c-n>', { noremap = true })

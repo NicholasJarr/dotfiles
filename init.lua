@@ -1,5 +1,6 @@
 require('vim_config')
 require('plugins')
+require('mini')
 require('colors')
 require('statusline')
 require('visual')

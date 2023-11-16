@@ -146,14 +146,6 @@ nvim_lsp['tsserver'].setup {
   on_attach = on_attach,
   capabilities = capabilities
 }
-nvim_lsp['omnisharp'].setup {
-  on_attach = on_attach,
-  capabilities = capabilities
-}
-nvim_lsp['rust_analyzer'].setup {
-  on_attach = on_attach,
-  capabilities = capabilities
-}
 
 -- null-ls.nvim
 local null_ls = require("null-ls")

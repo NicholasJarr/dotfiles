@@ -1,6 +1,3 @@
--- startify
-vim.api.nvim_command('au FileType startify IndentBlanklineDisable')
-
 -- indent_blankline
 vim.g.indent_blankline_char = '┊'
 vim.g.indent_blankline_filetype_exclude = { 'help', 'packer' }

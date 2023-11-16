@@ -20,30 +20,25 @@ require('packer').startup(function()
   -- package manager
   use 'wbthomason/packer.nvim'
 
+  -- General
+  use { 'echasnovski/mini.nvim', branch = 'stable' }
+
   -- themes
   use 'RRethy/nvim-base16'
-  use 'NLKNguyen/papercolor-theme'
   use { "mcchrish/zenbones.nvim", requires = "rktjmp/lush.nvim" }
 
   -- editing
-  use 'jiangmiao/auto-pairs'
-  use 'tpope/vim-commentary'
-  use 'machakann/vim-sandwich'
   use 'godlygeek/tabular'
   use 'editorconfig/editorconfig-vim'
-  use 'tpope/vim-unimpaired'
-  use {
-    'phaazon/hop.nvim',
-    branch = 'v2',
-    config = function()
-      require'hop'.setup()
-      vim.api.nvim_set_keymap('n', '<leader><leader>', "<cmd>lua require'hop'.hint_char2({ direction = nil, multi_windows = true })<cr>", { noremap = true })
-    end
-  }
-  use 'mattn/emmet-vim'
 
   -- navigation
-  use 'tpope/vim-vinegar'
+  use {
+    "stevearc/oil.nvim",
+    config = function()
+      require("oil").setup()
+    end,
+  }
+
   use { 'nvim-telescope/telescope.nvim', requires = { { 'nvim-lua/popup.nvim' }, { 'nvim-lua/plenary.nvim' } } }
   use {
     "ahmedkhalf/project.nvim",
@@ -58,7 +53,7 @@ require('packer').startup(function()
   use "sindrets/diffview.nvim"
 
   -- visual
-  use 'mhinz/vim-startify'
+  -- use 'mhinz/vim-startify'
   use 'nvim-lualine/lualine.nvim'
   use 'lukas-reineke/indent-blankline.nvim'
   use 'sheerun/vim-polyglot'
@@ -69,11 +64,10 @@ require('packer').startup(function()
 
   -- tags
   use 'ludovicchabant/vim-gutentags' -- Automatic tags management
-  use 'preservim/tagbar'
 
   -- completion
   use 'neovim/nvim-lspconfig'
-  use 'jose-elias-alvarez/null-ls.nvim'
+  use 'nvimtools/none-ls.nvim'
   use {
     "folke/trouble.nvim",
     requires = "kyazdani42/nvim-web-devicons",
