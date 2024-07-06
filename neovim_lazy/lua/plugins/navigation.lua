@@ -33,7 +33,7 @@ return {
       vim.api.nvim_set_keymap('n', '<leader>pg', ':Telescope live_grep<cr>', { noremap = true })
       vim.api.nvim_set_keymap('n', '<leader>pb', ':Telescope buffers<cr>', { noremap = true })
       vim.api.nvim_set_keymap('n', '<leader>pt', ':Telescope tags<cr>', { noremap = true })
-      vim.api.nvim_set_keymap('n', '<leader>pp', ':Telescope current_buffer_tags<cr>', { noremap = true })
+      vim.api.nvim_set_keymap('n', '<leader>pp', ':Telescope treesitter<cr>', { noremap = true })
     end
   },
   {
