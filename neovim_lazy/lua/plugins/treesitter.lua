@@ -26,8 +26,9 @@ return {
           "scss",
           "sql",
           "typescript",
+          "vimdoc",
           "xml",
-          "yaml"
+          "yaml",
         },
         textobjects = {
           select = {
