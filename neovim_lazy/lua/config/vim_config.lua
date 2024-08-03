@@ -29,7 +29,7 @@ vim.o.guifont = 'Iosevka:h12'
 vim.o.backup = true
 vim.o.backupdir = vim.env.HOME .. '/.vim/files/backup/'
 vim.o.backupext = '-vimbackup'
-vim.o.backupskip = ''
+vim.o.backupskip = '$TMPDIR/*,$TMP/*,$TEMP/*,.env'
 vim.o.directory = vim.env.HOME .. '/.vim/files/swap/'
 vim.o.updatecount = 100
 vim.o.undofile = true
@@ -58,6 +58,18 @@ vim.api.nvim_exec(
   augroup YankHighlight
     autocmd!
     autocmd TextYankPost * silent! lua vim.highlight.on_yank()
+  augroup end
+]],
+  false
+)
+
+-- Disable swap and undo for some files
+vim.api.nvim_exec(
+  [[
+  augroup DisableSwapAndUndo
+    autocmd!
+    autocmd BufEnter .env silent! :set noswapfile
+    autocmd BufEnter .env silent! :set noundofile
   augroup end
 ]],
   false

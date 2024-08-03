@@ -20,6 +20,6 @@ require("lazy").setup({
     { import = "plugins" },
   },
   install = { colorscheme = { "zenbones" } },
-  checker = { enabled = true },
+  checker = { enabled = false },
 })
 vim.cmd [[colorscheme zenbones]]
