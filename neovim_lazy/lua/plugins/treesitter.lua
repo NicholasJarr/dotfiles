@@ -8,7 +8,7 @@ return {
     local treesitter = require("nvim-treesitter.configs")
     
     treesitter.setup({
-        indent = { enable = true },
+        indent = { enable = true, disable = { "ruby" } },
         ensure_installed = {
           "bash",
           "c",
